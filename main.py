@@ -1,7 +1,7 @@
 import torch
 import argparse
 from LlmModel import ChatbotModel
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
 from Agents import RagAgent
