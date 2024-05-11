@@ -20,7 +20,10 @@ git clone https://github.com/QuangNguyen2910/AutClothingChatbot.git
 
 2. Install the required dependencies listed in `requirements.txt` using pip:
 
+In this command, I use colab kernel and move to the AutClothingChatbot folder:
+
 ```bash
+cd /content/AutClothingChatbot/
 pip install -r requirements.txt
 ```
 
@@ -28,22 +31,44 @@ pip install -r requirements.txt
 
 4. Run the main script to start the chatbot:
 
-Note: If you don't know what to put in the parser run:
+If you don't know what to put in the parser run:
 
 ```bash
-cd AutClothingChatbot
 python ./main.py --help
 ```
 
+Result will be like this:
 
-Example use:
+```
+usage: main.py [-h] -mn MNAME [-l4 LOAD4BIT] [-hf HFTOKEN] [-ms MAXSEQ] [-dt DTYPE] [-emn EMNAME]
+
+Config for using LLMs.
+
+options:
+  -h, --help            show this help message and exit
+  -mn MNAME, --mname MNAME
+                        The path or name from hugging face of the model.
+  -l4 LOAD4BIT, --load4bit LOAD4BIT
+                        Whether to load in the model 4-bit or not, example: True/False
+  -hf HFTOKEN, --hftoken HFTOKEN
+                        Hugging face token to use for authentication
+  -ms MAXSEQ, --maxseq MAXSEQ
+                        Maximum sequence length for the input
+  -dt DTYPE, --dtype DTYPE
+                        Data type for model weights
+  -emn EMNAME, --emname EMNAME
+                        The path or name from hugging face of the model.
+```
+
+Example Command:
 
 ```bash
-cd AutClothingChatbot
-python ./main.py -mn "unsloth/gemma-2b-it-bnb-4bit" \
--l4 "True" -hf "hf_xx" -ms "2048" -dt "None" \
+python ./main.py -mn "Quangnguyen711/clothes_shop_chatbot_QLoRA" \
+-l4 "True" -hf "hf_xxx" -ms "2048" -dt "None" \
 -emn "thenlper/gte-small"
 ```
+
+Note: For some model require a authentication token from huggingface in order to be readed.
 
 ## Usage
 
