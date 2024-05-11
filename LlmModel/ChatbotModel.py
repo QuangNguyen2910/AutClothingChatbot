@@ -1,6 +1,6 @@
 from unsloth import FastLanguageModel
 
-class ChatBotModel:
+class ChatbotModel:
     """
     Class for loading Large Language Models.
 
@@ -10,6 +10,7 @@ class ChatBotModel:
         load_in_4bit (bool, optional): Whether to load the model in 4-bit precision. Defaults to False.
         max_seq_length (int, optional): Maximum sequence length for the input. Defaults to 2048.
         dtype (type, optional): Data type for model weights. Defaults to None.
+        training (bool, optional): Whether the model is used for training. Defaults to False.
 
     Attributes:
         model (Any): Loaded model object.
@@ -21,13 +22,15 @@ class ChatBotModel:
                  hf_access_token: str = None,
                  load_in_4bit: bool = False,
                  max_seq_length: int = 2048,
-                 dtype: type = None) -> None:
+                 dtype: type = None,
+                 training: bool = False):
 
         self.model_name = model_name
         self.hf_access_token = hf_access_token
         self.load_in_4bit = load_in_4bit
         self.max_seq_length = max_seq_length
         self.dtype = dtype
+        self.training = training
 
         self.model = None
         self.tokenizer = None
@@ -66,7 +69,7 @@ class ChatBotModel:
             self.model, self.tokenizer = self.load_pretrained_model()
         return self.model, self.tokenizer
 
-    def get_peft_model(self, r: int = 16, lora_alpha: int = 16,
+    def apply_peft(self, r: int = 16, lora_alpha: int = 16,
                    target_modules: list = ["q_proj", "k_proj", "v_proj", "o_proj",
                                            "gate_proj", "up_proj", "down_proj"],
                    use_gradient_checkpointing: str = "unsloth",
@@ -75,7 +78,7 @@ class ChatBotModel:
         Apply Parameter-Efficient Fine-tuning (PEFT) to the model.
 
         Args:
-            r (int): Value of rank. Defaults to 16.
+            r (int): Number of clusters. Defaults to 16.
             lora_alpha (int): Alpha value for LoRA. Defaults to 16.
             target_modules (list): Modules to apply PEFT. Defaults to ["q_proj", "k_proj", "v_proj", "o_proj",
                                                "gate_proj", "up_proj", "down_proj"].

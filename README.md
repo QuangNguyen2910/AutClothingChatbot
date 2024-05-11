@@ -57,7 +57,7 @@ options:
   -dt DTYPE, --dtype DTYPE
                         Data type for model weights
   -emn EMNAME, --emname EMNAME
-                        The path or name from hugging face of the model.
+                        The path or name from hugging face of the model use to embedd data.
 ```
 
 Example Command:
