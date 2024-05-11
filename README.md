@@ -1,6 +1,3 @@
-Sure, here's a sample README file for uploading the chatbot on a GitHub repository:
-
-```
 # Chatbot for Clothing Store
 
 This repository contains the source code for a chatbot developed to serve as a clothing advisor and website guide for a clothing store. The chatbot is built using a fine-tuned large language model (LLM) and leverages the Retrieval Augmented Generation (RAG) method to retrieve information from a knowledge base stored in a text file.
@@ -25,7 +22,7 @@ pip install -r requirements.txt
 3. Run the main script to start the chatbot:
 
 ```bash
-python chatbot.py
+python main.py 
 ```
 
 ## Usage
@@ -54,8 +51,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For any inquiries or support, please contact [Your Name](mailto:your.email@example.com).
-
-``` 
-
-Make sure to replace placeholders like `[Your Name]` and `[Your Email]` with your actual name and email address.
+For any inquiries or support, please contact [Quang Nguyen](mailto:nguyenquang71103@gmail.com).
