@@ -41,7 +41,7 @@ Example use:
 ```bash
 cd AutClothingChatbot
 python ./main.py -mn "unsloth/gemma-2b-it-bnb-4bit" \
--l4 "True" -qu "True" -hf "hf_xx" -ms "2048" -dt "None" \
+-l4 "True" -hf "hf_xx" -ms "2048" -dt "None" \
 -emn "thenlper/gte-small"
 ```
 
