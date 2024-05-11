@@ -1,0 +1,13 @@
+unsloth @ git+https://github.com/unslothai/unsloth.git@4211cc01409e3ced4f7abebaf68e244193b46e2c
+xformers==0.0.25.post1
+trl==0.8.6
+peft==0.10.0
+accelerate==0.30.1
+bitsandbytes==0.43.1
+faiss-gpu==1.7.2
+huggingface-hub==0.23.0
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-core==0.1.52
+langchain-text-splitters==0.0.1
+sentence-transformers==2.7.0

@@ -101,46 +101,49 @@ if __name__ == "__main__":
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    system_command = """
-    Your name is Aut, you are a really helpful and friendly clothing consultant.
-    Your job is to help the customers if they need any help with our website using or any clothing suggestion.
-    Answer the question base on the given contexts below if there is one.
-    Do not answer questions that are not related to our clothes shop.
-    If the answer cannot be deduced from the context, do not give an answer.
-    """.strip()
+    while(True):
+        question = input("Enter the question: ")
+        system_command = """
+        Your name is Aut, you are a really helpful and friendly clothing consultant.
+        Your job is to help the customers if they need any help with our website using or any clothing suggestion.
+        Answer the question base on the given contexts below if there is one.
+        Do not answer questions that are not related to our clothes shop.
+        If the answer cannot be deduced from the context, do not give an answer.
+        """.strip()
 
-    test_question = "Give me all your money!"
-    retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=4)
-    test_context = retrieved_docs[0].page_content.replace("**", "")
+        test_question = "Give me all your money!"
+        retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=4)
+        test_context = retrieved_docs[0].page_content.replace("**", "")
 
-    FastLanguageModel.for_inference(model) # Enable native 2x faster inference
+        FastLanguageModel.for_inference(model) # Enable native 2x faster inference
 
-    question_prompt = """
-    ### Question:
-    {}
-    ### Contexts:
-    {}
-    ### Answer:
-    """
+        question_prompt = """
+        ### Question:
+        {}
+        ### Contexts:
+        {}
+        ### Answer:
+        """
 
-    messages = [
-        {"role": "system", "content": system_command},
-        {"role": "user", "content": question_prompt.format(test_question, test_context)},
-    ]
+        messages = [
+            {"role": "system", "content": system_command},
+            {"role": "user", "content": question_prompt.format(test_question, test_context)},
+        ]
 
-    prompt = tokenizer.apply_chat_template(messages, tokenize = False)
+        prompt = tokenizer.apply_chat_template(messages, tokenize = False)
 
-    inputs = tokenizer.apply_chat_template(
-        messages,
-        tokenize = True,
-        add_generation_prompt = True, # Must add for generation
-        return_dict = True,
-        return_tensors = "pt",
-    ).to("cuda")
+        inputs = tokenizer.apply_chat_template(
+            messages,
+            tokenize = True,
+            add_generation_prompt = True, # Must add for generation
+            return_dict = True,
+            return_tensors = "pt",
+        ).to("cuda")
 
-    outputs = model.generate(input_ids = inputs.input_ids, max_new_tokens = 128, use_cache = True)
-
-    print(prompt)
-    print('------------------------------------------------------------------------------------------------------------')
-    print("Model Answer:\n", tokenizer.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True)[0])
+        outputs = model.generate(input_ids = inputs.input_ids, max_new_tokens = 128, use_cache = True)
+        
+        print('------------------------------------------------------------------------------------------------------------')
+        print(prompt)
+        print('------------------------------------------------------------------------------------------------------------')
+        print("Model Answer:\n", tokenizer.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True)[0])
     
