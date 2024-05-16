@@ -1,10 +1,9 @@
 import torch
 import argparse
-from LlmModel.ChatbotModel import ChatbotModel
+from core import ChatbotModel, RagAgent
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
-from Agents import RagAgent
 from unsloth import FastLanguageModel
 
 def get_prompt_template(tokenizer):
@@ -88,7 +87,7 @@ if __name__ == "__main__":
         encode_kwargs={"normalize_embeddings": True},  # Set `True` for cosine similarity
     )
 
-    files = ["./Document/Autumn_RAG.txt",]
+    files = ["docs/Autumn_RAG.txt",]
 
     knowledge_base = RagAgent.document_chunking(files)
 
@@ -111,7 +110,7 @@ if __name__ == "__main__":
         If the answer cannot be deduced from the context, do not give an answer.
         """.strip()
 
-        test_question = question
+        test_question = "Give me all your money!"
         retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=4)
         test_context = retrieved_docs[0].page_content.replace("**", "")
 
