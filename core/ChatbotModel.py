@@ -2,7 +2,7 @@ from unsloth import FastLanguageModel
 
 class ChatbotModel:
     """
-    Class for loading Large Language Models.
+    Class for loading Large Language Models loaded from Unsloth.
 
     Args:
         model_name (str): Name of the pre-trained model.
