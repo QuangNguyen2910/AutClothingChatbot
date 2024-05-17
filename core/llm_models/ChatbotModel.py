@@ -21,7 +21,7 @@ class ChatbotModel:
                  model_name: str,
                  hf_access_token: str = None,
                  load_in_4bit: bool = False,
-                 max_seq_length: int = 2048,
+                 max_seq_length: int = 4096,
                  dtype: type = None,
                  training: bool = False):
 
@@ -69,7 +69,7 @@ class ChatbotModel:
             self.model, self.tokenizer = self.load_pretrained_model()
         return self.model, self.tokenizer
 
-    def apply_peft(self, r: int = 16, lora_alpha: int = 16,
+    def get_peft_model(self, r: int = 16, lora_alpha: int = 16,
                    target_modules: list = ["q_proj", "k_proj", "v_proj", "o_proj",
                                            "gate_proj", "up_proj", "down_proj"],
                    use_gradient_checkpointing: str = "unsloth",
