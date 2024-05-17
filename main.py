@@ -1,6 +1,6 @@
 import torch
 import argparse
-from core import ChatbotModel, RagAgent, FineTuning
+from core import ChatbotModel, RagAgent, Finetuner
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         DTYPE = eval(DTYPE)
     
     model, tokenizer = ChatbotModel(MODEL_NAME, HF_TOKEN, LOAD_IN_4BIT, MAX_SEQ_LENGTH, DTYPE).get_pretrained_model()
-    formated_prompt = FineTuning.get_prompt_template(tokenizer)
+    formated_prompt = Finetuner.get_prompt_template(tokenizer)
     print('------------------------------------------------------------------------------------------------------------')
     print('Model loaded successfully!')
     print('------------------------------------------------------------------------------------------------------------')
@@ -90,7 +90,6 @@ if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     while(True):
-        question = input("Enter the question: ")
         system_command = """
         Your name is Aut, you are a really helpful and friendly clothing consultant.
         Your job is to help the customers if they need any help with our website using or any clothing suggestion.
@@ -99,7 +98,7 @@ if __name__ == "__main__":
         If the answer cannot be deduced from the context, do not give an answer.
         """.strip()
 
-        test_question = "Give me all your money!"
+        test_question = input("Enter the question: ")
         retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=4)
         test_context = retrieved_docs[0].page_content.replace("**", "")
 
