@@ -1,6 +1,6 @@
 import torch
 import argparse
-from core import ChatbotModel, RagAgent
+from core import ChatbotModel, RagAgent, FineTuning
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
@@ -23,17 +23,6 @@ def get_prompt_template(tokenizer):
     formated_prompt = tokenizer.apply_chat_template(chat, tokenize=False)
 
     return formated_prompt
-
-def formatting_prompts_func(examples, formated_prompt):
-    questions = examples["Question"]
-    contexts = examples["Context"]
-    answers = examples["Answer"]
-    texts = []
-    for question, context, answer in zip(questions, contexts, answers):
-        text = formated_prompt.format(question, context, answer)
-        texts.append(text)
-    return { "text" : texts, }
-pass
 
 def parseargs():
     parser = argparse.ArgumentParser(description='Config for using LLMs.')
@@ -73,7 +62,7 @@ if __name__ == "__main__":
         DTYPE = eval(DTYPE)
     
     model, tokenizer = ChatbotModel(MODEL_NAME, HF_TOKEN, LOAD_IN_4BIT, MAX_SEQ_LENGTH, DTYPE).get_pretrained_model()
-    formated_prompt = get_prompt_template(tokenizer)
+    formated_prompt = FineTuning.get_prompt_template(tokenizer)
     print('------------------------------------------------------------------------------------------------------------')
     print('Model loaded successfully!')
     print('------------------------------------------------------------------------------------------------------------')
