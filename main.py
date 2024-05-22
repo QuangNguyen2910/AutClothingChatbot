@@ -7,6 +7,14 @@ from unsloth import FastLanguageModel
 import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList, TextIteratorStreamer
 from threading import Thread
+from fastapi import FastAPI, Request, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from io import BytesIO
+from fastapi.responses import Response, JSONResponse
+from fastapi.encoders import jsonable_encoder
+import nest_asyncio
+from pyngrok import ngrok
+import uvicorn
 
 class StopOnTokens(StoppingCriteria):
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
@@ -39,6 +47,7 @@ if __name__ == "__main__":
     MODEL_NAME = args.mname
     LOAD_IN_4BIT = args.load4bit
     HF_TOKEN = args.hftoken
+    NGROK_AUTHENTICATION_TOKEN = args.ngroktoken
     MAX_SEQ_LENGTH = args.maxseq
     DTYPE = args.dtype
     EMBEDDING_MODEL_NAME = args.emname
@@ -46,6 +55,7 @@ if __name__ == "__main__":
 
     LOAD_IN_4BIT = True if LOAD_IN_4BIT == "True" else False
     HF_TOKEN = str(HF_TOKEN)
+    NGROK_AUTHENTICATION_TOKEN = str(NGROK_AUTHENTICATION_TOKEN)
     MAX_SEQ_LENGTH = 2048 if MAX_SEQ_LENGTH in [None, "None"] else int(MAX_SEQ_LENGTH)
     DTYPE = None if DTYPE in [None, "None"] else eval(DTYPE)
     EMBEDDING_MODEL_NAME = "thenlper/gte-small" if EMBEDDING_MODEL_NAME in [None, "None"] else EMBEDDING_MODEL_NAME
@@ -121,7 +131,74 @@ if __name__ == "__main__":
             print('------------------------------------------------------------------------------------------------------------')
             print("Aut: ", tokenizer.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True)[0])
     elif DISPlAY == "api":
-        pass
+        def run(question):
+            retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=question, k=1, fetch_k=4)
+            test_context = retrieved_docs[0].page_content.replace("**", "")
+
+            FastLanguageModel.for_inference(model) # Enable native 2x faster inference
+
+            question_prompt = """
+            ### Question:
+            {}
+            ### Contexts:
+            {}
+            ### Answer:
+            """
+
+            messages = [
+                {"role": "system", "content": system_command},
+                {"role": "user", "content": question_prompt.format(test_question, test_context)},
+            ]
+
+            inputs = tokenizer.apply_chat_template(
+                messages,
+                tokenize = True,
+                add_generation_prompt = True, # Must add for generation
+                return_dict = True,
+                return_tensors = "pt",
+            ).to("cuda")
+
+            outputs = model.generate(input_ids = inputs.input_ids, max_new_tokens = 128, use_cache = True)
+            answer = tokenizer.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True)[0].rstrip("<|im_end|>")
+
+            return answer
+
+
+
+        app = FastAPI()
+
+        origins = ["*"]
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=origins,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+        @app.get("/")
+        async def root():
+            return {"message": "it works!"}
+
+
+        @app.post("/llm_chat")
+        async def llm_chat(req: Request):
+            jsonFromRequest = await req.json();
+
+            message = jsonFromRequest["message"]
+
+            res = {
+                "answer": run(message)
+            }
+
+            return res
+
+        ngrok.set_auth_token("")
+
+        ngrok_tunnel = ngrok.connect(5000)
+        print('Public URL:', f"{ngrok_tunnel.public_url}/llm_chat")
+        nest_asyncio.apply()
+        uvicorn.run(app, port=5000)
     else:
         FastLanguageModel.for_inference(model) # Enable native 2x faster inference
 
