@@ -23,52 +23,58 @@ git clone https://github.com/QuangNguyen2910/AutClothingChatbot.git
 In this command, I use colab kernel and move to the AutClothingChatbot folder:
 
 ```bash
-cd /content/AutClothingChatbot/
+cd AutClothingChatbot
 pip install -r requirements.txt
 ```
 
-3. Upload any document you want to model get data from into `Document`
+3. Upload any document you want to model get data from into `docs`
 
 4. Run the main script to start the chatbot:
 
 If you don't know what to put in the parser run:
 
 ```bash
-python ./main.py --help
+python main.py --help
 ```
 
 Result will be like this:
 
 ```
-usage: main.py [-h] -mn MNAME [-l4 LOAD4BIT] [-hf HFTOKEN] [-ms MAXSEQ] [-dt DTYPE] [-emn EMNAME]
+usage: parser.py [-h] -mn MNAME [-l4 LOAD4BIT] [-hf HFTOKEN] [-ng NGROKTOKEN] [-ms MAXSEQ] [-dt DTYPE] [-emn EMNAME] [-d DISPLAY]
 
 Config for using LLMs.
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -mn MNAME, --mname MNAME
-                        The path or name from hugging face of the model.
+                        The path or name from hugging face of the model, example: "Quangnguyen711/clothes_shop_chatbot_QLoRA".
   -l4 LOAD4BIT, --load4bit LOAD4BIT
-                        Whether to load in the model 4-bit or not, example: True/False
+                        Whether to load in the model 4-bit or not, example: "True"/"False".
   -hf HFTOKEN, --hftoken HFTOKEN
-                        Hugging face token to use for authentication
+                        Hugging face token to use for authentication, example: "hf_xxx".
+  -ng NGROKTOKEN, --ngroktoken NGROKTOKEN
+                        Ngrok token to use for authentication if you want to your llm as api endpoint.
   -ms MAXSEQ, --maxseq MAXSEQ
-                        Maximum sequence length for the input
+                        Maximum sequence length for the input, example: "2048".
   -dt DTYPE, --dtype DTYPE
-                        Data type for model weights
+                        Data type for model weights, example: "None".
   -emn EMNAME, --emname EMNAME
-                        The path or name from hugging face of the model use to embedd data.
+                        The path or name from hugging face of the model use to embedd data, example: "thenlper/gte-small".
+  -d DISPLAY, --display DISPLAY
+                        Where to display the model, example: "kernel"/"api"/"deploy".
 ```
 
 Example Command:
 
 ```bash
-python ./main.py -mn "Quangnguyen711/clothes_shop_chatbot_QLoRA" \
--l4 "True" -hf "hf_xxx" -ms "2048" -dt "None" \
--emn "thenlper/gte-small"
+python main.py -mn "Quangnguyen711/clothes_shop_chatbot_QLoRA" \
+-l4 "True" -hf "hf_xxx" -ng "xxx" -ms "2048" -dt "None" \
+-emn "thenlper/gte-small" -d "deploy"
 ```
 
 Note: For some model require a authentication token from huggingface in order to be readed.
+![alt text](images/image.png)
+This will be the interface that you get after finish running this command, you can using [this notebook](notebooks\Repo_testing.ipynb) to see the instructions
 
 ## Usage
 
