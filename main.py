@@ -8,6 +8,14 @@ import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList, TextIteratorStreamer
 from threading import Thread
 
+class StopOnTokens(StoppingCriteria):
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+        stop_ids = [29, 0]
+        for stop_id in stop_ids:
+            if input_ids[0][-1] == stop_id:
+                return True
+        return False
+
 def get_prompt_template(tokenizer):
     question_prompt = """
     ### Question:
@@ -86,13 +94,12 @@ if __name__ == "__main__":
     """.strip()
 
     if DISPlAY == "kernel":
+        FastLanguageModel.for_inference(model) # Enable native 2x faster inference
         while(True):
 
             test_question = input("Enter the question: ")
-            retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=4)
+            retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=test_question, k=1, fetch_k=2)
             test_context = retrieved_docs[0].page_content.replace("**", "")
-
-            FastLanguageModel.for_inference(model) # Enable native 2x faster inference
 
             messages = [
                 {"role": "system", "content": system_command},
@@ -117,18 +124,10 @@ if __name__ == "__main__":
         pass
     else:
         FastLanguageModel.for_inference(model) # Enable native 2x faster inference
-        
-        class StopOnTokens(StoppingCriteria):
-            def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
-                stop_ids = [29, 0]
-                for stop_id in stop_ids:
-                    if input_ids[0][-1] == stop_id:
-                        return True
-                return False
 
         def predict(message, history):
             history_transformer_format = [{"role": "system", "content": system_command}]
-            retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=message, k=1, fetch_k=4)
+            retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=message, k=1, fetch_k=2)
             msg_context = retrieved_docs[0].page_content.replace("**", "")
             for human, assistant in history[1:]:
                 history_transformer_format.append({"role": "user", "content": human })
@@ -145,6 +144,7 @@ if __name__ == "__main__":
                     return_dict = True,
                     return_tensors = "pt",
             ).to(device)
+            
             streamer = TextIteratorStreamer(tokenizer, timeout=10., skip_prompt=True, skip_special_tokens=True)
             generate_kwargs = dict(model_inputs, streamer=streamer, max_new_tokens=128)
             t = Thread(target=model.generate, kwargs=generate_kwargs)
@@ -156,5 +156,5 @@ if __name__ == "__main__":
                     partial_message += new_token
                     yield partial_message
 
-        gr.ChatInterface(predict).launch(inline=False)
+        gr.ChatInterface(predict).launch(inline=False, share=True)
     
