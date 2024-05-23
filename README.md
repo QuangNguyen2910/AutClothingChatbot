@@ -53,7 +53,7 @@ optional arguments:
   -hf HFTOKEN, --hftoken HFTOKEN
                         Hugging face token to use for authentication, example: "hf_xxx".
   -ng NGROKTOKEN, --ngroktoken NGROKTOKEN
-                        Ngrok token to use for authentication if you want to your llm as api endpoint.
+                        Ngrok token to use for authentication if you want to use your llm as api endpoint.
   -ms MAXSEQ, --maxseq MAXSEQ
                         Maximum sequence length for the input, example: "2048".
   -dt DTYPE, --dtype DTYPE
